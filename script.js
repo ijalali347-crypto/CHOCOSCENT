@@ -1,12 +1,63 @@
-const stage=document.getElementById('bloomStage'),flower=document.getElementById('flower'),product=document.getElementById('product'),bottle=document.getElementById('bottle'),wrap=document.getElementById('bottleWrap');
-function bloom(){stage.classList.add('bloomed');setTimeout(()=>product.scrollIntoView({behavior:'smooth',block:'center'}),650)}
-flower.addEventListener('click',bloom);flower.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')bloom()});
-document.getElementById('heroFlower').addEventListener('click',()=>{document.getElementById('perfume').scrollIntoView({behavior:'smooth'});setTimeout(bloom,650)});
-document.getElementById('openPerfume').addEventListener('click',()=>{document.getElementById('perfume').scrollIntoView({behavior:'smooth'});setTimeout(bloom,650)});
-let dragging=false,lastX=0,rotation=0,auto=0;
-function paint(){bottle.style.transform='rotateY('+(rotation+auto)+'deg) rotateX(-2deg)'}
-wrap.addEventListener('pointerdown',e=>{dragging=true;lastX=e.clientX;wrap.setPointerCapture(e.pointerId)});
-wrap.addEventListener('pointermove',e=>{if(!dragging)return;rotation+=(e.clientX-lastX)*.8;lastX=e.clientX;paint()});
-wrap.addEventListener('pointerup',()=>dragging=false);wrap.addEventListener('pointercancel',()=>dragging=false);
-setInterval(()=>{if(!dragging&&stage.classList.contains('bloomed')){auto=(auto+.35)%360;paint()}},30);
-document.querySelector('.product-info .gold').addEventListener('click',()=>{const n=document.querySelector('.bag span');n.textContent=Number(n.textContent)+1});
+
+const tilt=document.getElementById('tilt'),cap=document.getElementById('cap'),stage=document.getElementById('stage'),notes=document.getElementById('notes'),hint=document.getElementById('hint');
+const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+const rgb=c=>`rgb(${c})`;
+function R(t){
+  if(t<.1)return 46+26*Math.sin(t/.1*Math.PI/2);
+  if(t<.55)return 72+2*Math.sin((t-.1)/.45*Math.PI);
+  if(t<.86)return 72-32*Math.pow((t-.55)/.31,1.6);
+  return 40-14*Math.sin((t-.86)/.14*Math.PI/2);
+}
+function col(t){
+  const bl=[34,110,255],md=[10,28,110],bk=[4,5,12];
+  return t<.45?mix(bl,md,t/.45):mix(md,bk,Math.min(1,(t-.45)/.25));
+}
+function disc(parent,r,h,bg){
+  const d=document.createElement('div');d.className='d';
+  d.style.cssText=`width:${2*r}px;height:${2*r}px;left:${-r}px;top:${-r}px;background:${bg};transform:rotateX(90deg) translateZ(${h}px)`;
+  parent.appendChild(d);
+}
+const H=200,N=68;
+for(let i=0;i<N;i++){
+  const t=i/(N-1);let r=R(t),c=col(t);
+  if(t>.865&&t<.9){r+=3;c=[200,210,232];}
+  disc(tilt,r,t*H,`radial-gradient(circle at 36% 30%,${rgb(mix(c,[255,255,255],.4))} 0,${rgb(c)} 45%,${rgb(mix(c,[0,0,0],.55))} 100%)`);
+}
+// keep body discs behind the spinning label and the cap
+tilt.insertBefore(tilt.lastElementChild,null);
+for(let i=0;i<9;i++){
+  const t=i/8,r=34+26*Math.pow(1-Math.pow(2*t-1,6),.5);
+  disc(cap,r,i*2.6,'radial-gradient(circle at 35% 30%,#6f8de0 0,#10142a 28%,#02030a 100%)');
+}
+const cols=['#4d8dff','#8db4ff','#dfe8ff','#2b4fd8','#ffffff','#a9c0ff'];
+const flower=c=>`<svg viewBox="-25 -25 50 50" width="100%" height="100%">${[0,60,120,180,240,300].map(a=>`<ellipse cx="0" cy="-11" rx="6" ry="12" fill="${c}" opacity=".92" transform="rotate(${a})"/>`).join('')}<circle r="5" fill="#cfd8ee"/></svg>`;
+let opened=false;
+function burst(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  for(let i=0;i<22;i++){
+    const f=document.createElement('div');
+    f.style.cssText='position:absolute;left:50%;bottom:330px;width:50px;height:50px;margin-left:-25px;pointer-events:none;z-index:5';
+    f.innerHTML=flower(cols[i%cols.length]);stage.appendChild(f);
+    const dx=(Math.random()-.5)*Math.min(innerWidth*.7,420),up=120+Math.random()*220,s=.5+Math.random()*.9,r=(Math.random()-.5)*720;
+    f.animate([
+      {transform:'translate(0,40px) scale(0) rotate(0)',opacity:0},
+      {transform:`translate(${dx*.4}px,${-up}px) scale(${s}) rotate(${r*.5}deg)`,opacity:1,offset:.45},
+      {transform:`translate(${dx}px,${-up+260+Math.random()*120}px) scale(${s*.8}) rotate(${r}deg)`,opacity:0}
+    ],{duration:(reduce?1400:2600)+Math.random()*1600,delay:i*70,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}).onfinish=()=>f.remove();
+  }
+}
+stage.addEventListener('click',()=>{
+  if(!opened){opened=true;stage.classList.add('open');notes.classList.add('on');hint.textContent='Tap again for more flowers';}
+  burst();
+});
+
+const catalog={perfume:{name:'Night De Paris Motion, 100 ml',price:350},chocolate:{name:'Dubai Chocolate Bar',price:45}};
+let bagState={};try{const saved=JSON.parse(localStorage.getItem('chocoscent-bag')||'{}');for(const id of Object.keys(catalog)){if(Number.isInteger(saved[id])&&saved[id]>0)bagState[id]=Math.min(saved[id],99)}}catch{}
+const cart=document.getElementById('cart'),items=document.getElementById('cartItems');let toastTimer;
+function renderBag(){let count=0,total=0;items.replaceChildren();for(const [id,qty]of Object.entries(bagState)){const p=catalog[id];count+=qty;total+=qty*p.price;const row=document.createElement('div');row.className='cart-row';row.innerHTML=`<h3>${p.name}</h3><p>AED ${p.price} each · AED ${p.price*qty}</p><div class="quantity"><button data-id="${id}" data-action="minus" aria-label="Decrease ${p.name} quantity">−</button><span>${qty}</span><button data-id="${id}" data-action="plus" aria-label="Increase ${p.name} quantity" ${qty>=99?'disabled':''}>+</button><button class="remove" data-id="${id}" data-action="remove">Remove</button></div>`;items.append(row)}if(!count){const p=document.createElement('p');p.textContent='Your bag is waiting for a little indulgence.';items.append(p)}document.getElementById('count').textContent=count;document.getElementById('bag').setAttribute('aria-label',`Open shopping bag, ${count} items`);document.getElementById('subtotal').textContent=`AED ${total}`;try{localStorage.setItem('chocoscent-bag',JSON.stringify(bagState))}catch{}}
+document.querySelectorAll('.add').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.product;bagState[id]=Math.min((bagState[id]||0)+1,99);renderBag();const toast=document.getElementById('toast');toast.textContent=`${catalog[id].name} added to your bag`;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}));
+items.addEventListener('click',event=>{const b=event.target.closest('button[data-action]');if(!b)return;const id=b.dataset.id;if(b.dataset.action==='remove')delete bagState[id];else{bagState[id]=Math.min(99,bagState[id]+(b.dataset.action==='plus'?1:-1));if(bagState[id]<=0)delete bagState[id]}renderBag();const replacement=items.querySelector(`button[data-id="${id}"][data-action="${b.dataset.action}"]`);(replacement||document.getElementById('closeCart')).focus()});
+document.getElementById('bag').addEventListener('click',()=>{cart.showModal();document.body.style.overflow='hidden'});
+function closeBag(){cart.close()}
+document.getElementById('closeCart').addEventListener('click',closeBag);document.getElementById('continueShopping').addEventListener('click',closeBag);cart.addEventListener('close',()=>{document.body.style.overflow='';document.getElementById('bag').focus()});cart.addEventListener('click',event=>{if(event.target===cart){const r=cart.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeBag()}});renderBag();
+
