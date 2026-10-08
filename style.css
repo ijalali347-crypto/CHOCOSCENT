@@ -67,3 +67,13 @@ dialog{margin:auto 0 auto auto;width:min(480px,100%);height:100dvh;max-height:10
 
 
 .bottle-motion{position:relative;width:0;height:0;transform-style:preserve-3d;transform-origin:0 -100px;transform:translateX(0px) scale(1) skew(0deg) rotate(0turn)}
+
+/* L'Orientale catalogue */
+.catalogue-section{padding:95px 7vw 110px;background:linear-gradient(155deg,#10182c,#090b15 65%);color:#f4eee6}
+.catalogue-heading{max-width:740px;margin-bottom:35px}.catalogue-heading h2{font-size:clamp(40px,5.5vw,74px);margin:12px 0 20px}.catalogue-heading>p:last-child{color:#aab4c8;font-size:15px}
+.catalogue-controls{display:flex;flex-wrap:wrap;gap:14px;margin:25px 0 12px}.catalogue-controls input,.catalogue-controls select{background:#151e33;color:#f3f0e9;border:1px solid #ffffff30;padding:14px 16px;border-radius:6px;font:inherit;min-width:210px;flex:1}.catalogue-controls input::placeholder{color:#9ba7bb}
+.catalogue-count{color:#b4a384;font-size:12px;letter-spacing:.12em;margin:15px 0 24px}.fragrance-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px}
+.fragrance-card{background:#172036;border:1px solid #ffffff16;overflow:hidden;border-radius:9px;transition:transform .25s,border-color .25s}.fragrance-card:hover{transform:translateY(-5px);border-color:#b4a38488}
+.fragrance-visual{aspect-ratio:1;display:grid;place-items:center;background:#252536;overflow:hidden}.fragrance-visual img{width:100%;height:100%;object-fit:cover;transition:transform .6s}.fragrance-card:hover img{transform:scale(1.04)}.image-pending{padding:25px;text-align:center;color:#9ba7bb;font-size:13px}
+.fragrance-info{padding:19px}.fragrance-info small{color:#b7a989;text-transform:uppercase;font-size:10px;letter-spacing:.12em}.fragrance-info h3{font-size:27px;margin:9px 0}.fragrance-info p{color:#aab4c8;font-size:12px}.catalogue-footnote{font-size:12px;color:#8795ae;margin-top:35px}
+@media(max-width:1100px){.fragrance-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.catalogue-section{padding:65px 6vw}.fragrance-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.fragrance-info{padding:12px}.fragrance-info h3{font-size:22px}.catalogue-controls input,.catalogue-controls select{min-width:100%}}
