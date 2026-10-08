@@ -31,9 +31,38 @@ for(let i=0;i<9;i++){
 }
 const cols=['#4d8dff','#8db4ff','#dfe8ff','#2b4fd8','#ffffff','#a9c0ff'];
 const flower=c=>`<svg viewBox="-25 -25 50 50" width="100%" height="100%">${[0,60,120,180,240,300].map(a=>`<ellipse cx="0" cy="-11" rx="6" ry="12" fill="${c}" opacity=".92" transform="rotate(${a})"/>`).join('')}<circle r="5" fill="#cfd8ee"/></svg>`;
+
+const motionTarget=document.getElementById('bottleMotion');
+let animeWaapi=null,motionBusy=false;
+import('https://cdn.jsdelivr.net/npm/animejs@4.0.0/+esm')
+  .then(module=>{animeWaapi=module.waapi}).catch(()=>{});
+function animateBottle(){
+  if(motionBusy||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  motionBusy=true;
+  const travel=Math.max(0,Math.min(96,stage.getBoundingClientRect().width/2-155));
+  const start='translateX(0px) scale(1) skew(0deg) rotate(0turn)';
+  const finish=`translateX(${travel}px) scale(1.25) skew(-45deg) rotate(1turn)`;
+  const unlock=()=>{motionBusy=false};
+  try{
+    if(animeWaapi){
+      animeWaapi.animate(motionTarget,{
+        transform:[start,finish],duration:1400,ease:'inOut(3)',
+        alternate:true,loop:1,onComplete:unlock
+      });
+    }else{
+      const animation=motionTarget.animate([{transform:start},{transform:finish}],{
+        duration:1400,easing:'cubic-bezier(.65,0,.35,1)',
+        iterations:2,direction:'alternate'
+      });
+      animation.onfinish=unlock;animation.oncancel=unlock;
+    }
+  }catch{unlock()}
+}
+
 let opened=false;
 function burst(){
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce)return;
   for(let i=0;i<22;i++){
     const f=document.createElement('div');
     f.style.cssText='position:absolute;left:50%;bottom:330px;width:50px;height:50px;margin-left:-25px;pointer-events:none;z-index:5';
@@ -47,7 +76,8 @@ function burst(){
   }
 }
 stage.addEventListener('click',()=>{
-  if(!opened){opened=true;stage.classList.add('open');notes.classList.add('on');hint.textContent='Tap again for more flowers';}
+  if(!opened){opened=true;stage.classList.add('open');notes.classList.add('on');hint.textContent='Tap again to replay';}
+  animateBottle();
   burst();
 });
 
