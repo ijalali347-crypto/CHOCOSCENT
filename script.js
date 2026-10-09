@@ -35,7 +35,7 @@ const flower=c=>`<svg viewBox="-25 -25 50 50" width="100%" height="100%">${[0,60
 const motionTarget=document.getElementById('bottleMotion');
 let animeWaapi=null,motionBusy=false;
 import('https://cdn.jsdelivr.net/npm/animejs@4.0.0/+esm')
-  .then(module=>{animeWaapi=module.waapi}).catch(()=>{});
+  .then(module=>{animeWaapi=module.waapi;initProductMotion(module.animate)}).catch(()=>{});
 function animateBottle(){
   if(motionBusy||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   motionBusy=true;
@@ -91,3 +91,66 @@ document.getElementById('bag').addEventListener('click',()=>{cart.showModal();do
 function closeBag(){cart.close()}
 document.getElementById('closeCart').addEventListener('click',closeBag);document.getElementById('continueShopping').addEventListener('click',closeBag);cart.addEventListener('close',()=>{document.body.style.overflow='';document.getElementById('bag').focus()});cart.addEventListener('click',event=>{if(event.target===cart){const r=cart.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeBag()}});renderBag();
 
+
+/* SVG product motion: distortion and six-point polygon morphing. */
+const productMotionQuery=matchMedia('(prefers-reduced-motion: reduce)');
+let productAnimate=null,productMotionId=0;
+const productMotionEntries=new Map();
+function syncProductMotion(){
+  for(const entry of productMotionEntries.values()){
+    const running=entry.visible&&!document.hidden&&!productMotionQuery.matches;
+    for(const animation of entry.animations)running?animation.resume():animation.pause();
+    if(productMotionQuery.matches){
+      for(const animation of entry.animations)animation.reset();
+      entry.displacement.setAttribute('scale','0');
+    }
+  }
+}
+const productMotionObserver=new IntersectionObserver(entries=>{
+  for(const observed of entries){
+    const entry=productMotionEntries.get(observed.target);
+    if(entry)entry.visible=observed.isIntersecting;
+  }
+  syncProductMotion();
+},{threshold:.15});
+function decorateProductMotion(){
+  for(const [element,entry]of productMotionEntries){
+    if(!element.isConnected){
+      entry.animations.forEach(animation=>animation.cancel());
+      productMotionObserver.unobserve(element);
+      productMotionEntries.delete(element);
+    }
+  }
+  document.querySelectorAll('.art, .fragrance-visual').forEach(visual=>{
+    if(productMotionEntries.has(visual))return;
+    const id='product-wave-'+(++productMotionId);
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.classList.add('product-motion-svg');
+    svg.setAttribute('viewBox','0 0 128 128');
+    svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
+    svg.innerHTML=`<defs><filter id="${id}" x="-35%" y="-35%" width="170%" height="170%"><feTurbulence type="fractalNoise" numOctaves="2" baseFrequency="0.008" seed="3" result="turbulence"/><feDisplacementMap in="SourceGraphic" in2="turbulence" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></defs><polygon points="64 116 18 90 18 38 64 12 110 38 110 90" fill="none" stroke="currentColor" stroke-width="0.7" filter="url(#${id})"/>`;
+    visual.prepend(svg);visual.classList.add('has-product-motion');
+    const entry={visible:false,animations:[],svg,displacement:svg.querySelector('feDisplacementMap')};
+    productMotionEntries.set(visual,entry);productMotionObserver.observe(visual);
+    if(productAnimate)startProductMotion(entry);
+  });
+}
+function startProductMotion(entry){
+  if(entry.animations.length)return;
+  const common={duration:3200,alternate:true,loop:true,ease:'inOut(2)',autoplay:false};
+  entry.animations=[
+    productAnimate(entry.svg.querySelector('feTurbulence'),{...common,baseFrequency:[.008,.05]}),
+    productAnimate(entry.displacement,{...common,scale:[0,15]}),
+    productAnimate(entry.svg.querySelector('polygon'),{...common,duration:4600,points:'64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100'})
+  ];
+}
+function initProductMotion(animate){
+  productAnimate=animate;
+  for(const entry of productMotionEntries.values())startProductMotion(entry);
+  syncProductMotion();
+}
+decorateProductMotion();
+const productGrid=document.querySelector('main');
+if(productGrid)new MutationObserver(decorateProductMotion).observe(productGrid,{childList:true,subtree:true});
+document.addEventListener('visibilitychange',syncProductMotion);
+productMotionQuery.addEventListener('change',syncProductMotion);
