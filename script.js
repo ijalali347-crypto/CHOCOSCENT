@@ -127,7 +127,7 @@ function decorateProductMotion(){
     const id='product-wave-'+(++productMotionId);
     const palettes=[['#9cbaf5','#dbb7ea'],['#efb5c8','#f1cf91'],['#9ecbb8','#c6c6ed'],['#9ec9e9','#d8bcee']];
     const colours=palettes[(productMotionId-1)%palettes.length];
-    const petals=[[27,34,1],[101,45,.8],[29,96,.85],[100,99,1.1]].map(([x,y,s],i)=>
+    const petals=[[35,43,1.3],[94,45,1.15],[36,87,1.2],[94,88,1.35]].map(([x,y,s],i)=>
       `<g transform="translate(${x} ${y}) scale(${s})"><g class="motion-flower flower-${i}">${[0,60,120,180,240,300].map(angle=>`<ellipse cx="0" cy="-5" rx="3" ry="6" fill="${colours[i%2]}" transform="rotate(${angle})"/>`).join('')}<circle r="2.5" fill="#fff5ce"/></g></g>`).join('');
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.classList.add('product-motion-svg');
@@ -146,7 +146,7 @@ function startProductMotion(entry){
   entry.animations=[
     productAnimate(entry.svg.querySelector('feTurbulence'),{...common,baseFrequency:[.008,.05]}),
     productAnimate(entry.displacement,{...common,scale:[0,15]}),
-    productAnimate(entry.svg.querySelectorAll('.motion-shape'),{...common,duration:4600,points:'64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100'})
+    productAnimate(entry.svg.querySelectorAll('.motion-shape'),{...common,duration:4600,points:'64 108 26 94 12 52 64 18 116 52 102 94'})
   ];
 }
 function initProductMotion(animate){
