@@ -99,6 +99,7 @@ const productMotionEntries=new Map();
 function syncProductMotion(){
   for(const entry of productMotionEntries.values()){
     const running=entry.visible&&!document.hidden&&!productMotionQuery.matches;
+    entry.svg.classList.toggle('is-motion-active',running);
     for(const animation of entry.animations)running?animation.resume():animation.pause();
     if(productMotionQuery.matches){
       for(const animation of entry.animations)animation.reset();
@@ -124,11 +125,15 @@ function decorateProductMotion(){
   document.querySelectorAll('.art, .fragrance-visual').forEach(visual=>{
     if(productMotionEntries.has(visual))return;
     const id='product-wave-'+(++productMotionId);
+    const palettes=[['#9cbaf5','#dbb7ea'],['#efb5c8','#f1cf91'],['#9ecbb8','#c6c6ed'],['#9ec9e9','#d8bcee']];
+    const colours=palettes[(productMotionId-1)%palettes.length];
+    const petals=[[27,34,1],[101,45,.8],[29,96,.85],[100,99,1.1]].map(([x,y,s],i)=>
+      `<g transform="translate(${x} ${y}) scale(${s})"><g class="motion-flower flower-${i}">${[0,60,120,180,240,300].map(angle=>`<ellipse cx="0" cy="-5" rx="3" ry="6" fill="${colours[i%2]}" transform="rotate(${angle})"/>`).join('')}<circle r="2.5" fill="#fff5ce"/></g></g>`).join('');
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.classList.add('product-motion-svg');
     svg.setAttribute('viewBox','0 0 128 128');
     svg.setAttribute('aria-hidden','true');svg.setAttribute('focusable','false');
-    svg.innerHTML=`<defs><filter id="${id}" x="-35%" y="-35%" width="170%" height="170%"><feTurbulence type="fractalNoise" numOctaves="2" baseFrequency="0.008" seed="3" result="turbulence"/><feDisplacementMap in="SourceGraphic" in2="turbulence" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter></defs><polygon points="64 116 18 90 18 38 64 12 110 38 110 90" fill="none" stroke="currentColor" stroke-width="0.7" filter="url(#${id})"/>`;
+    svg.innerHTML=`<defs><linearGradient id="${id}-colour" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${colours[0]}" stop-opacity=".6"/><stop offset="1" stop-color="${colours[1]}" stop-opacity=".35"/></linearGradient><filter id="${id}" x="-35%" y="-35%" width="170%" height="170%"><feTurbulence type="fractalNoise" numOctaves="2" baseFrequency="0.008" seed="3" result="turbulence"/><feDisplacementMap in="SourceGraphic" in2="turbulence" scale="0" xChannelSelector="R" yChannelSelector="G"/></filter><clipPath id="${id}-clip"><polygon class="motion-shape" points="64 116 18 90 18 38 64 12 110 38 110 90"/></clipPath></defs><polygon class="motion-shape" points="64 116 18 90 18 38 64 12 110 38 110 90" fill="url(#${id}-colour)" stroke="${colours[0]}" stroke-width=".7" filter="url(#${id})"/><g clip-path="url(#${id}-clip)" opacity=".85">${petals}<circle cx="24" cy="66" r="1.6" fill="#fff4d2"/><circle cx="102" cy="80" r="1.2" fill="#fff4d2"/></g>`;
     visual.prepend(svg);visual.classList.add('has-product-motion');
     const entry={visible:false,animations:[],svg,displacement:svg.querySelector('feDisplacementMap')};
     productMotionEntries.set(visual,entry);productMotionObserver.observe(visual);
@@ -141,7 +146,7 @@ function startProductMotion(entry){
   entry.animations=[
     productAnimate(entry.svg.querySelector('feTurbulence'),{...common,baseFrequency:[.008,.05]}),
     productAnimate(entry.displacement,{...common,scale:[0,15]}),
-    productAnimate(entry.svg.querySelector('polygon'),{...common,duration:4600,points:'64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100'})
+    productAnimate(entry.svg.querySelectorAll('.motion-shape'),{...common,duration:4600,points:'64 68.64 8.574 100 63.446 67.68 64 4 64.554 67.68 119.426 100'})
   ];
 }
 function initProductMotion(animate){
