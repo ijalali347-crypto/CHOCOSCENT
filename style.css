@@ -77,3 +77,13 @@ dialog{margin:auto 0 auto auto;width:min(480px,100%);height:100dvh;max-height:10
 .fragrance-visual{aspect-ratio:1;display:grid;place-items:center;background:#252536;overflow:hidden}.fragrance-visual img{width:100%;height:100%;object-fit:cover;transition:transform .6s}.fragrance-card:hover img{transform:scale(1.04)}.image-pending{padding:25px;text-align:center;color:#9ba7bb;font-size:13px}
 .fragrance-info{padding:19px}.fragrance-info small{color:#b7a989;text-transform:uppercase;font-size:10px;letter-spacing:.12em}.fragrance-info h3{font-size:27px;margin:9px 0}.fragrance-info p{color:#aab4c8;font-size:12px}.catalogue-footnote{font-size:12px;color:#8795ae;margin-top:35px}
 @media(max-width:1100px){.fragrance-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:700px){.catalogue-section{padding:65px 6vw}.fragrance-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.fragrance-info{padding:12px}.fragrance-info h3{font-size:22px}.catalogue-controls input,.catalogue-controls select{min-width:100%}}
+
+/* Animated SVG framing around each product. */
+.has-product-motion{position:relative;isolation:isolate}
+.product-motion-svg{position:absolute;inset:8%;width:84%;height:84%;color:#8caee9;opacity:.34;pointer-events:none;z-index:0}
+.choco-art .product-motion-svg{color:#c5a06a;opacity:.5}
+.has-product-motion>img,.has-product-motion>.bar,.has-product-motion>.image-pending{position:relative;z-index:1}
+.has-product-motion>.product-tag{z-index:2}
+.art.has-product-motion img{max-width:76%}
+.fragrance-visual.has-product-motion img{width:84%;height:84%;border-radius:6px}
+@media(prefers-reduced-motion:reduce){.product-motion-svg{opacity:.15}}
