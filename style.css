@@ -121,3 +121,52 @@ dialog{margin:auto 0 auto auto;width:min(480px,100%);height:100dvh;max-height:10
 .shop .chocolate-photo>img,.shop .chocolate-photo.has-product-motion>img{width:100%;height:100%;max-width:100%;object-fit:contain;mix-blend-mode:normal;border-radius:0}
 .chocolate-photo .product-motion-svg{display:none}
 @media(max-width:800px){.shop .art{height:330px}.shop .chocolate-photo{height:auto;aspect-ratio:1979/2560}.shop .chocolate-photo>img{display:block}}
+
+/* Sky blue and white: a bright Chocoscent collection. */
+:root{--night:#f9fcff;--navy:#e4f4ff;--cocoa:#ffffff;--acc:#167ab5;--sil:#183c59;--cream:#183c59}
+body{background:#fff;color:#183c59}
+nav{background:#ffffffeb;border-bottom:1px solid #b7def4;box-shadow:0 4px 24px #347aa20b}
+nav a,.logo,.bag{color:#183c59}.bag{border-color:#93cdeb}.bag span{background:#d9efff}
+.hero{background:linear-gradient(115deg,#fff 0%,#fff 48%,#d8f0ff 48%,#a9ddfa 100%)}
+.hero:after{content:"";position:absolute;width:450px;height:450px;right:-160px;top:30px;border-radius:50%;background:#ffffff55;pointer-events:none;animation:sky-drift 12s ease-in-out infinite alternate}
+.hero>div,.hero>.stage{z-index:1}.hero h1 em,.about h2 em{color:#2387c1}
+.hero p,.hero .hero-detail,.hint{color:#486e88}.eyebrow,.hero .eyebrow{color:#217ba9}
+.stage{background:radial-gradient(ellipse at 50% 80%,#7ac4ef55,transparent 60%)}
+.stage:before{border-color:#fff9}.glow{background:radial-gradient(#56b7e9,transparent 70%)}
+.notes{background:#ffffffaa;border-color:#3894c9}.notes b{color:#204e70}
+.btn{background:#248fc7;color:white;box-shadow:0 6px 18px #3897c225}
+.btn:hover{background:#136ea6}.text-link{color:#245775}
+.signature-strip{background:#f8fcff;color:#3f7697;border-color:#c9e7f8}
+.shop{background:#e5f4ff}.section-heading>p,.card p{color:#4c728b}
+.card h3,.price{color:#204a69}.art{box-shadow:0 16px 36px #4d91b619}
+.card .btn{background:#fff;color:#22648c;border-color:#a2d3ef}.card .btn:hover{background:#c8eaff}
+.about{background:linear-gradient(120deg,#fff 50%,#e6f5ff 50%)}.about p:not(.eyebrow){color:#517086}
+footer{background:#e0f2ff;border-color:#b8dbef}footer p,footer small{color:#4b718b}
+.catalogue-section{background:linear-gradient(145deg,#fff 0%,#fff 50%,#e5f4ff 100%);color:#183c59}
+.catalogue-heading>p:last-child,.catalogue-footnote{color:#52768d}
+.catalogue-controls input,.catalogue-controls select{background:#f2faff;color:#254e6b;border-color:#abd6ef}
+.catalogue-controls input::placeholder{color:#688ca2}.catalogue-count{color:#3e7a9b}
+.fragrance-card{background:#fff;border-color:#c6e5f6;box-shadow:0 10px 28px #509aca13}
+.fragrance-card:hover{border-color:#5fb6e6;box-shadow:0 18px 38px #509aca2b}
+.fragrance-visual{background:#f8fcff}.fragrance-info small{color:#3682ac}
+.fragrance-info p,.fragrance-family{color:#50748d!important}
+.fragrance-details-button{color:#267ca9;border-color:#d3eaf6}.fragrance-details-button:hover{color:#174a70}
+.catalogue-empty p{color:#50748d}
+dialog{background:#f8fcff;color:#183c59;border-color:#acd7ed}dialog::backdrop{background:#183c5966}
+.cart-head button,.quantity button{color:#244f6f;border-color:#b7d9ed}
+.cart-row{border-color:#c8e3f3}.cart-row p,.cart-note{color:#52758c}
+.fragrance-detail-image{background:#eef8ff}.fragrance-spec{color:#3184af}
+.fragrance-description,.fragrance-notes dd{color:#3e627b}.fragrance-notes dt{color:#197caf}.fragrance-availability{color:#52758c}
+#toast{background:#1d789f;color:white}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #1688c6;outline-offset:4px}
+@keyframes sky-drift{from{transform:translate(0,0) scale(.9)}to{transform:translate(-65px,60px) scale(1.12)}}
+@keyframes sky-float{0%,100%{translate:0 0}50%{translate:0 -12px}}
+@keyframes sky-enter{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.hero h1,.hero p,.hero-actions{animation:sky-enter .9s ease both}.hero h1{animation-delay:.08s}.hero-actions{animation-delay:.2s}
+.stage .bottle-motion{animation:sky-float 6s ease-in-out infinite}
+.sky-reveal{opacity:0;transform:translateY(28px);transition:opacity .75s ease,transform .75s cubic-bezier(.2,.7,.3,1)}
+.sky-reveal.sky-visible{opacity:1;transform:translateY(0)}
+.fragrance-card,.card .art,.btn,.text-link{transition:transform .35s ease,box-shadow .35s ease,background .25s ease}
+.card:hover .art{transform:translateY(-5px);box-shadow:0 22px 40px #509aca2b}
+@media(max-width:800px){.hero{background:linear-gradient(165deg,#fff 0%,#fff 48%,#ddf2ff 48%,#bce5fc 100%)}.hero:after{width:260px;height:260px;right:-100px}.about{background:linear-gradient(155deg,#fff 50%,#e6f5ff 50%)}}
+@media(prefers-reduced-motion:reduce){.sky-reveal{opacity:1;transform:none}.stage .bottle-motion,.hero:after,.hero h1,.hero p,.hero-actions{animation:none}}

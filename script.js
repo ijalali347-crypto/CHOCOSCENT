@@ -159,3 +159,20 @@ const productGrid=document.querySelector('main');
 if(productGrid)new MutationObserver(decorateProductMotion).observe(productGrid,{childList:true,subtree:true});
 document.addEventListener('visibilitychange',syncProductMotion);
 productMotionQuery.addEventListener('change',syncProductMotion);
+
+/* Reveal content once as it enters the viewport; keep reduced motion static. */
+const skyMotionPreference=matchMedia('(prefers-reduced-motion: reduce)');
+const skyRevealObserver=new IntersectionObserver(entries=>{
+  for(const entry of entries)if(entry.isIntersecting){entry.target.classList.add('sky-visible');skyRevealObserver.unobserve(entry.target)}
+},{threshold:.08});
+function prepareSkyReveals(){
+  document.querySelectorAll('.section-heading,.card,.catalogue-heading,.catalogue-controls,.fragrance-card,.about h2,.about p,footer').forEach(element=>{
+    if(element.dataset.skyReady)return;
+    element.dataset.skyReady='true';
+    if(skyMotionPreference.matches)return;
+    element.classList.add('sky-reveal');skyRevealObserver.observe(element);
+  });
+}
+prepareSkyReveals();
+new MutationObserver(prepareSkyReveals).observe(document.querySelector('main'),{childList:true,subtree:true});
+skyMotionPreference.addEventListener('change',()=>{if(skyMotionPreference.matches){document.querySelectorAll('.sky-reveal').forEach(element=>element.classList.add('sky-visible'));skyRevealObserver.disconnect()}});
