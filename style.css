@@ -220,3 +220,18 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 @keyframes cat-nozzle{0%,20%,85%,100%{opacity:0}24%,82%{opacity:1}54%,60%{opacity:1;translate:0 2px}}
 @keyframes cat-mist{0%,51%,72%,100%{opacity:0;transform:rotate(var(--angle)) scaleX(.1)}56%{opacity:.75;transform:rotate(var(--angle)) scaleX(1)}68%{opacity:0;transform:rotate(var(--angle)) translateX(-30px) scaleX(1.4)}}
 @media(prefers-reduced-motion:reduce){.cat-playing *{animation:none!important}.cat-replay{display:none}}
+
+/* Paw and cap share one motion path; the seated body stays grounded. */
+.cat-perfume-scene{--grip-x:50%;--grip-y:35%;--paw-angle:0deg;--press-angle:0deg;--cap-dx:0px;--cap-dy:0px;--cap-angle:0deg;--cat-opacity:0}
+.cat-perfume-scene .articulated-cat{position:absolute;width:50%;height:auto;aspect-ratio:1;left:calc(var(--grip-x) - 8%);right:auto;top:calc(var(--grip-y) - 8%);opacity:var(--cat-opacity);transform:none;animation:none!important;z-index:4}
+.cat-photo-body,.cat-photo-lift-paw,.cat-photo-press-paw{position:absolute;inset:0;background:url('images/perfume-cat-v1.webp') center/100% 100% no-repeat}
+.cat-photo-body{clip-path:polygon(32% 0%,100% 0%,100% 100%,0% 100%,0% 47%,36% 47%,40% 35%,32% 30%)}
+.cat-photo-lift-paw{clip-path:polygon(8% 8%,34% 8%,48% 35%,44% 49%,29% 42%,13% 28%);transform-origin:42% 40%;transform:rotate(var(--paw-angle));z-index:2}
+.cat-photo-press-paw{clip-path:polygon(13% 28%,31% 25%,47% 44%,39% 52%,17% 40%);transform-origin:44% 46%;transform:rotate(var(--press-angle));z-index:3}
+.cat-playing .cat-bottle-body,.cat-playing .cat-bottle-cap,.cat-playing .cat-spray-nozzle,.cat-playing .cat-perfume-mist i{animation:none!important}
+.cat-playing .cat-bottle-cap{transform:translate(var(--cap-dx),var(--cap-dy)) rotate(var(--cap-angle))}
+.cat-cap-off .cat-bottle-body{clip-path:inset(var(--cap-line) 0 0)}
+.cat-cap-off .cat-spray-nozzle{opacity:1}
+.cat-pressing .cat-spray-nozzle{translate:0 2px}
+.cat-misting .cat-perfume-mist i{animation:grip-spray .55s ease-out infinite!important;animation-delay:var(--delay)!important}
+@keyframes grip-spray{0%{opacity:0;transform:rotate(var(--angle)) scaleX(.05)}30%{opacity:.7}100%{opacity:0;transform:rotate(var(--angle)) translateX(-30px) scaleX(1.4)}}

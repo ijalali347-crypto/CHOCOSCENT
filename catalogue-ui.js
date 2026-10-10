@@ -15,7 +15,8 @@ function catPresentation(p){
   const scene=node('div',null,'cat-perfume-scene');
   const body=picture(p,false);body.className='cat-bottle-body';
   const cap=picture(p,false);cap.alt='';cap.setAttribute('aria-hidden','true');cap.className='cat-bottle-cap';
-  const cat=node('img',null,'perfume-cat');cat.src='images/perfume-cat-v1.webp';cat.alt='';cat.setAttribute('aria-hidden','true');
+  const cat=node('div',null,'perfume-cat articulated-cat');cat.setAttribute('aria-hidden','true');
+  cat.append(node('span',null,'cat-photo-body'),node('span',null,'cat-photo-lift-paw'),node('span',null,'cat-photo-press-paw'));
   const nozzle=node('span',null,'cat-spray-nozzle');nozzle.setAttribute('aria-hidden','true');
   const mist=node('span',null,'cat-perfume-mist');mist.setAttribute('aria-hidden','true');
   for(let i=0;i<16;i++){const drop=node('i');drop.style.setProperty('--angle',(i/15*42-21)+'deg');drop.style.setProperty('--delay',(i%4*.045)+'s');mist.append(drop)}
@@ -32,6 +33,8 @@ function catPresentation(p){
       for(let y=peak+3;y<Math.min(h,first+h*.18);y++)if(rows[y].width>3&&rows[y].width<rows[peak].width*.52){split=y;break}
       split=Math.max(first+6,Math.min(split,h*.55));
       scene.style.setProperty('--cap-line',(split/h*100)+'%');
+      scene.style.setProperty('--grip-x',((rows[peak].left+rows[peak].right)/2/w*100)+'%');
+      scene.style.setProperty('--grip-y',(peak/h*100)+'%');
       scene.style.setProperty('--cap-left',Math.max(0,(rows[peak].left-3)/w*100)+'%');
       scene.style.setProperty('--cap-right',Math.max(0,(w-rows[peak].right-4)/w*100)+'%');
     }catch{}
@@ -39,9 +42,39 @@ function catPresentation(p){
   if(body.complete&&body.naturalWidth)alignCap();else body.addEventListener('load',alignCap,{once:true});
   return scene;
 }
+const catFrames=new Map();
+function stopCat(scene){
+  cancelAnimationFrame(catFrames.get(scene));catFrames.delete(scene);
+  scene.classList.remove('cat-playing','cat-cap-off','cat-pressing','cat-misting');scene.style.setProperty('--cat-opacity','0');
+}
+dialog.addEventListener('close',()=>{for(const scene of catFrames.keys())stopCat(scene)});
 function playCat(scene){
+  stopCat(scene);
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-  scene.classList.remove('cat-playing');void scene.offsetWidth;scene.classList.add('cat-playing');
+  scene.classList.add('cat-playing');
+  const started=performance.now();
+  const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v)};
+  function frame(now){
+    if(!dialog.open||!scene.isConnected){stopCat(scene);return}
+    const t=now-started;
+    const lift=smooth((t-1100)/1200)*(1-smooth((t-4100)/1200));
+    const angle=lift*50*Math.PI/180,scale=.5;
+    // The cap follows the upper paw's exact pivot arc.
+    const dx=scale*(-.26*Math.cos(angle)+.24*Math.sin(angle)+.26);
+    const dy=scale*(-.26*Math.sin(angle)-.24*Math.cos(angle)+.24);
+    const press=smooth((t-2700)/280)*(1-smooth((t-3400)/350));
+    scene.style.setProperty('--paw-angle',(lift*50)+'deg');
+    scene.style.setProperty('--cap-dx',(dx*scene.clientWidth)+'px');
+    scene.style.setProperty('--cap-dy',(dy*scene.clientWidth)+'px');
+    scene.style.setProperty('--cap-angle',(lift*8)+'deg');
+    scene.style.setProperty('--press-angle',(-press*12)+'deg');
+    scene.style.setProperty('--cat-opacity',String(smooth(t/700)*(1-smooth((t-5700)/800))));
+    scene.classList.toggle('cat-cap-off',lift>.01);
+    scene.classList.toggle('cat-pressing',press>.4);
+    scene.classList.toggle('cat-misting',t>3000&&t<3550);
+    if(t<6600)catFrames.set(scene,requestAnimationFrame(frame));else stopCat(scene);
+  }
+  catFrames.set(scene,requestAnimationFrame(frame));
 }
 function showProduct(p,button){returnFocus=button;const content=dialog.querySelector('.fragrance-detail-content');content.replaceChildren();const imageArea=node('div',null,'fragrance-detail-image');const scene=catPresentation(p);const replay=node('button','Replay cat & spray','cat-replay');replay.type='button';replay.addEventListener('click',()=>playCat(scene));imageArea.append(scene,replay);const info=node('div',null,'fragrance-detail-info');const title=node('h2',p.name);title.id='fragrance-title';info.append(node('p',p.collection+' collection','eyebrow'),title,node('p',p.volume+' · '+p.concentration,'fragrance-spec'),node('p',p.description,'fragrance-description'));
 const list=node('dl',null,'fragrance-notes');for(const [label,value]of [['Scent family',p.family],['Top notes',p.topNotes],['Heart notes',p.heartNotes],['Base notes',p.baseNotes],['Accords',p.accords]])if(value){list.append(node('dt',label),node('dd',value))}info.append(list,node('p','Prices and availability on request.','fragrance-availability'));content.append(imageArea,info);dialog.showModal();document.body.style.overflow='hidden';close.focus();requestAnimationFrame(()=>playCat(scene))}
