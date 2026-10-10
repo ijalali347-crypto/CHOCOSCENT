@@ -176,7 +176,15 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .bottle-motion{z-index:2}
 .hummingbird-orbit{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;will-change:transform;transition:opacity .3s}
 .hummingbird-sprite{position:absolute;width:160px;height:160px;background-image:url('images/hummingbird-flight.webp');background-repeat:no-repeat;background-size:300% 100%;background-position:0% 50%;filter:drop-shadow(0 8px 7px #184c6322);transform-origin:center;pointer-events:none}
-.hummingbird-orbit.is-flying .hummingbird-sprite{animation:hummingbird-wingbeat .18s steps(1,end) infinite}
+.hummingbird-orbit.is-flying .hummingbird-sprite{animation:hummingbird-wingbeat .075s steps(1,end) infinite}
 @keyframes hummingbird-wingbeat{0%,100%{background-position:0% 50%}25%,75%{background-position:45.6% 50%}50%{background-position:94.6% 50%}}
 @media(max-width:800px){.hummingbird-sprite{width:128px;height:128px}}
 @media(prefers-reduced-motion:reduce){.hummingbird-orbit,.hummingbird-sprite{animation:none!important;transition:none!important}}
+
+/* Studio product presentation: attached cap and unobstructed branding. */
+.stage .bottle-motion{position:relative;width:390px;height:390px;flex:none;transform-style:flat;transform-origin:50% 75%;animation:sky-float 8s ease-in-out infinite}
+.hero-product-photo{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 24px 16px #20567924);pointer-events:none}
+.hummingbird-sprite{width:118px;height:118px;transition:transform .5s ease;filter:drop-shadow(0 5px 5px #184c6319)}
+.hint{animation:none;opacity:.8}
+@media(max-width:800px){.stage .bottle-motion{width:min(360px,100%);height:360px}.hummingbird-sprite{width:96px;height:96px}}
+@media(prefers-reduced-motion:reduce){.stage .bottle-motion{animation:none}}

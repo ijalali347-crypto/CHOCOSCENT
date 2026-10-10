@@ -1,37 +1,4 @@
-
-const tilt=document.getElementById('tilt'),cap=document.getElementById('cap'),stage=document.getElementById('stage'),notes=document.getElementById('notes'),hint=document.getElementById('hint');
-const mix=(a,b,t)=>a.map((v,i)=>Math.round(v+(b[i]-v)*t));
-const rgb=c=>`rgb(${c})`;
-function R(t){
-  if(t<.1)return 46+26*Math.sin(t/.1*Math.PI/2);
-  if(t<.55)return 72+2*Math.sin((t-.1)/.45*Math.PI);
-  if(t<.86)return 72-32*Math.pow((t-.55)/.31,1.6);
-  return 40-14*Math.sin((t-.86)/.14*Math.PI/2);
-}
-function col(t){
-  const bl=[34,110,255],md=[10,28,110],bk=[4,5,12];
-  return t<.45?mix(bl,md,t/.45):mix(md,bk,Math.min(1,(t-.45)/.25));
-}
-function disc(parent,r,h,bg){
-  const d=document.createElement('div');d.className='d';
-  d.style.cssText=`width:${2*r}px;height:${2*r}px;left:${-r}px;top:${-r}px;background:${bg};transform:rotateX(90deg) translateZ(${h}px)`;
-  parent.appendChild(d);
-}
-const H=200,N=68;
-for(let i=0;i<N;i++){
-  const t=i/(N-1);let r=R(t),c=col(t);
-  if(t>.865&&t<.9){r+=3;c=[200,210,232];}
-  disc(tilt,r,t*H,`radial-gradient(circle at 36% 30%,${rgb(mix(c,[255,255,255],.4))} 0,${rgb(c)} 45%,${rgb(mix(c,[0,0,0],.55))} 100%)`);
-}
-// keep body discs behind the spinning label and the cap
-tilt.insertBefore(tilt.lastElementChild,null);
-for(let i=0;i<9;i++){
-  const t=i/8,r=29+3*Math.sin(t*Math.PI);
-  disc(cap,r,i*2.6,'radial-gradient(circle at 35% 30%,#6f8de0 0,#10142a 28%,#02030a 100%)');
-}
-const cols=['#4d8dff','#8db4ff','#dfe8ff','#2b4fd8','#ffffff','#a9c0ff'];
-const flower=c=>`<svg viewBox="-25 -25 50 50" width="100%" height="100%">${[0,60,120,180,240,300].map(a=>`<ellipse cx="0" cy="-11" rx="6" ry="12" fill="${c}" opacity=".92" transform="rotate(${a})"/>`).join('')}<circle r="5" fill="#cfd8ee"/></svg>`;
-
+const stage=document.getElementById('stage'),notes=document.getElementById('notes'),hint=document.getElementById('hint');
 const motionTarget=document.getElementById('bottleMotion');
 let animeWaapi=null,motionBusy=false;
 import('https://cdn.jsdelivr.net/npm/animejs@4.0.0/+esm')
@@ -41,7 +8,7 @@ function animateBottle(){
   motionBusy=true;
   const travel=Math.max(0,Math.min(96,stage.getBoundingClientRect().width/2-155));
   const start='translateX(0px) scale(1) skew(0deg) rotate(0turn)';
-  const finish=`translateX(${Math.min(travel,24)}px) translateY(-14px) scale(1.06) rotate(-4deg)`;
+  const finish=`translateX(${Math.min(travel,24)}px) translateY(-14px) scale(1.02) rotate(-2deg)`;
   const unlock=()=>{motionBusy=false};
   try{
     if(animeWaapi){
@@ -59,26 +26,10 @@ function animateBottle(){
   }catch{unlock()}
 }
 
-let opened=false;
-function burst(){
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce)return;
-  for(let i=0;i<22;i++){
-    const f=document.createElement('div');
-    f.style.cssText='position:absolute;left:50%;bottom:330px;width:50px;height:50px;margin-left:-25px;pointer-events:none;z-index:5';
-    f.innerHTML=flower(cols[i%cols.length]);stage.appendChild(f);
-    const dx=(Math.random()-.5)*Math.min(innerWidth*.7,420),up=120+Math.random()*220,s=.5+Math.random()*.9,r=(Math.random()-.5)*720;
-    f.animate([
-      {transform:'translate(0,40px) scale(0) rotate(0)',opacity:0},
-      {transform:`translate(${dx*.4}px,${-up}px) scale(${s}) rotate(${r*.5}deg)`,opacity:1,offset:.45},
-      {transform:`translate(${dx}px,${-up+260+Math.random()*120}px) scale(${s*.8}) rotate(${r}deg)`,opacity:0}
-    ],{duration:(reduce?1400:2600)+Math.random()*1600,delay:i*70,easing:'cubic-bezier(.2,.7,.3,1)',fill:'both'}).onfinish=()=>f.remove();
-  }
-}
 stage.addEventListener('click',()=>{
-  if(!opened){opened=true;stage.classList.add('open');notes.classList.add('on');hint.textContent='Tap again to replay';}
+  notes.classList.add('on');
+  hint.textContent='Night De Paris · Motion · 100 ml';
   animateBottle();
-  burst();
 });
 
 const catalog={perfume:{name:'Night De Paris Motion, 100 ml',price:350},chocolate:{name:'Dubai Chocolate Bar',price:45}};
@@ -185,12 +136,12 @@ skyMotionPreference.addEventListener('change',()=>{if(skyMotionPreference.matche
   let visible=false,frame=0,last=0,elapsed=0,phase=0;
   function position(theta){
     const width=stage.clientWidth,height=stage.clientHeight;
-    const radiusX=Math.max(0,Math.min(width*.29,width/2-82,175)),radiusY=Math.min(height*.11,55);
-    const x=width/2+Math.cos(theta)*radiusX,y=height-235+Math.sin(theta)*radiusY;
-    const nearer=Math.sin(theta)>0,scale=nearer?1.02:.76;
+    const radiusX=Math.max(0,Math.min(width*.34,width/2-58,175)),radiusY=Math.min(height*.06,32);
+    const x=width/2+Math.cos(theta)*radiusX,y=height*.24+Math.sin(theta)*radiusY;
+    const nearer=Math.sin(theta)>0,scale=.84+Math.sin(theta)*.08;
     orbit.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
     orbit.style.zIndex=nearer?'4':'1';
-    bird.style.transform=`translate(-50%,-50%) scaleX(${Math.sin(theta)>=0?1:-1}) rotate(${Math.cos(theta)*7}deg)`;
+    bird.style.transform=`translate(-50%,-50%) rotate(${Math.cos(theta)*4}deg) rotateY(${Math.sin(theta)>=0?0:180}deg)`;
     orbit.style.opacity=nearer?'1':'.86';
   }
   function tick(now){
