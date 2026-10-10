@@ -188,3 +188,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .hint{animation:none;opacity:.8}
 @media(max-width:800px){.stage .bottle-motion{width:min(360px,100%);height:360px}.hummingbird-sprite{width:96px;height:96px}}
 @media(prefers-reduced-motion:reduce){.stage .bottle-motion{animation:none}}
+
+/* Stable photographic body with continuously sweeping, blurred wings. */
+.hummingbird-sprite{background:none!important;animation:none!important;transition:none;filter:drop-shadow(0 3px 3px #184c6314)}
+.hummingbird-sprite::before,.hummingbird-wings{content:"";position:absolute;inset:0;background:url('images/hummingbird-natural-v2.webp') center/contain no-repeat;pointer-events:none}
+.hummingbird-sprite::before{clip-path:polygon(0% 32%,42% 32%,49% 43%,53% 53%,84% 81%,84% 88%,39% 78%,25% 60%,0% 48%)}
+.hummingbird-wings{clip-path:polygon(43% 5%,100% 5%,100% 58%,58% 72%,46% 53%);transform-origin:50% 54%;filter:blur(.65px);opacity:.85}
+.hummingbird-orbit.is-flying .hummingbird-wings{animation:natural-wing-sweep .095s ease-in-out infinite alternate}
+@keyframes natural-wing-sweep{from{transform:rotate(-13deg) scaleY(.68);opacity:.65}to{transform:rotate(9deg) scaleY(1);opacity:.9}}
+@media(prefers-reduced-motion:reduce){.hummingbird-wings{animation:none!important}}

@@ -131,22 +131,22 @@ skyMotionPreference.addEventListener('change',()=>{if(skyMotionPreference.matche
 /* Hummingbird: perspective orbit, sprite wingbeats, and an upright bottle. */
 (function initHummingbird(){
   const orbit=document.createElement('div');orbit.className='hummingbird-orbit';orbit.setAttribute('aria-hidden','true');
-  const bird=document.createElement('div');bird.className='hummingbird-sprite';orbit.appendChild(bird);stage.appendChild(orbit);
+  const bird=document.createElement('div');bird.className='hummingbird-sprite';const wings=document.createElement('div');wings.className='hummingbird-wings';bird.appendChild(wings);orbit.appendChild(bird);stage.appendChild(orbit);
   const preference=matchMedia('(prefers-reduced-motion: reduce)');
   let visible=false,frame=0,last=0,elapsed=0,phase=0;
   function position(theta){
     const width=stage.clientWidth,height=stage.clientHeight;
     const radiusX=Math.max(0,Math.min(width*.34,width/2-58,175)),radiusY=Math.min(height*.06,32);
-    const x=width/2+Math.cos(theta)*radiusX,y=height*.24+Math.sin(theta)*radiusY;
+    const x=width/2+Math.cos(theta)*radiusX,y=height*.24+Math.sin(theta)*radiusY+Math.sin(theta*3)*4;
     const nearer=Math.sin(theta)>0,scale=.84+Math.sin(theta)*.08;
     orbit.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
-    orbit.style.zIndex=nearer?'4':'1';
-    bird.style.transform=`translate(-50%,-50%) rotate(${Math.cos(theta)*4}deg) rotateY(${Math.sin(theta)>=0?0:180}deg)`;
+    orbit.style.zIndex='4';
+    bird.style.transform=`translate(-50%,-50%) rotate(${Math.cos(theta)*3}deg) rotateY(${90-90*Math.tanh(Math.sin(theta)*4)}deg)`;
     orbit.style.opacity=nearer?'1':'.86';
   }
   function tick(now){
     if(last)elapsed+=Math.min(now-last,80);last=now;
-    phase=elapsed/12500*Math.PI*2;
+    phase=elapsed/18000*Math.PI*2;
     position(phase);frame=requestAnimationFrame(tick);
   }
   function sync(){
