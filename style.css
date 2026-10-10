@@ -242,3 +242,23 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .cat-greeting{position:absolute;left:59%;top:-3%;padding:7px 12px;border-radius:16px 16px 16px 2px;background:white;color:#277da5;box-shadow:0 4px 16px #3b749226;font:700 clamp(16px,2vw,22px)/1.2 Jost,system-ui,sans-serif;white-space:nowrap;opacity:0;transform:translateY(6px) scale(.9);transition:opacity .25s,transform .3s}
 .cat-saying-hi .cat-greeting{opacity:1;transform:none}
 @media(prefers-reduced-motion:reduce){.cat-greeting{transition:none}}
+
+/* Cart → delivery → test payment → confirmation. */
+[hidden]{display:none!important}
+#cart{width:min(620px,94vw);max-height:90dvh;overflow:auto}
+#buyNow{width:100%;margin:12px 0}
+.checkout-back{display:block;background:none;border:0;color:#267ca9;padding:12px 0;font:inherit;cursor:pointer}
+.checkout-test-label{padding:9px 13px;background:#fff3d9;border:1px solid #ecd4a0;color:#70551f;border-radius:8px;font-size:13px;margin:15px 0}
+.delivery-form{display:grid;gap:15px}
+.delivery-form label{display:grid;gap:6px;font-size:14px;font-weight:500}
+.delivery-form input,.delivery-form textarea{width:100%;min-width:0;border:1px solid #abd6ef;border-radius:8px;background:#fff;color:#183c59;padding:11px 12px;font:inherit}
+.checkout-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.checkout-note{font-size:13px;color:#52758c;line-height:1.6;margin:12px 0}
+.checkout-error{color:#af283e;font-size:14px}
+.checkout-summary,.checkout-address{background:#eef8ff;border-radius:10px;padding:15px;margin:15px 0}
+.checkout-summary p{padding:5px 0;border-bottom:1px solid #d7eaf5;font-size:14px}
+.checkout-summary strong{display:block;margin-top:10px}
+.checkout-address p{overflow-wrap:anywhere;font-size:14px}
+.checkout-success{color:#207859;font-size:20px;font-weight:600;margin:20px 0}
+.catalogue-add{font-size:13px;padding:10px 16px;margin-top:12px}
+@media(max-width:500px){.checkout-fields{grid-template-columns:1fr}}

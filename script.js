@@ -32,17 +32,6 @@ stage.addEventListener('click',()=>{
   animateBottle();
 });
 
-const catalog={perfume:{name:'Night De Paris Motion, 100 ml',price:350},chocolate:{name:'Dubai Chocolate Bar',price:45}};
-let bagState={};try{const saved=JSON.parse(localStorage.getItem('chocoscent-bag')||'{}');for(const id of Object.keys(catalog)){if(Number.isInteger(saved[id])&&saved[id]>0)bagState[id]=Math.min(saved[id],99)}}catch{}
-const cart=document.getElementById('cart'),items=document.getElementById('cartItems');let toastTimer;
-function renderBag(){let count=0,total=0;items.replaceChildren();for(const [id,qty]of Object.entries(bagState)){const p=catalog[id];count+=qty;total+=qty*p.price;const row=document.createElement('div');row.className='cart-row';row.innerHTML=`<h3>${p.name}</h3><p>AED ${p.price} each · AED ${p.price*qty}</p><div class="quantity"><button data-id="${id}" data-action="minus" aria-label="Decrease ${p.name} quantity">−</button><span>${qty}</span><button data-id="${id}" data-action="plus" aria-label="Increase ${p.name} quantity" ${qty>=99?'disabled':''}>+</button><button class="remove" data-id="${id}" data-action="remove">Remove</button></div>`;items.append(row)}if(!count){const p=document.createElement('p');p.textContent='Your bag is waiting for a little indulgence.';items.append(p)}document.getElementById('count').textContent=count;document.getElementById('bag').setAttribute('aria-label',`Open shopping bag, ${count} items`);document.getElementById('subtotal').textContent=`AED ${total}`;try{localStorage.setItem('chocoscent-bag',JSON.stringify(bagState))}catch{}}
-document.querySelectorAll('.add').forEach(button=>button.addEventListener('click',()=>{const id=button.dataset.product;bagState[id]=Math.min((bagState[id]||0)+1,99);renderBag();const toast=document.getElementById('toast');toast.textContent=`${catalog[id].name} added to your bag`;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2600)}));
-items.addEventListener('click',event=>{const b=event.target.closest('button[data-action]');if(!b)return;const id=b.dataset.id;if(b.dataset.action==='remove')delete bagState[id];else{bagState[id]=Math.min(99,bagState[id]+(b.dataset.action==='plus'?1:-1));if(bagState[id]<=0)delete bagState[id]}renderBag();const replacement=items.querySelector(`button[data-id="${id}"][data-action="${b.dataset.action}"]`);(replacement||document.getElementById('closeCart')).focus()});
-document.getElementById('bag').addEventListener('click',()=>{cart.showModal();document.body.style.overflow='hidden'});
-function closeBag(){cart.close()}
-document.getElementById('closeCart').addEventListener('click',closeBag);document.getElementById('continueShopping').addEventListener('click',closeBag);cart.addEventListener('close',()=>{document.body.style.overflow='';document.getElementById('bag').focus()});cart.addEventListener('click',event=>{if(event.target===cart){const r=cart.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)closeBag()}});renderBag();
-
-
 /* SVG product motion: distortion and six-point polygon morphing. */
 const productMotionQuery=matchMedia('(prefers-reduced-motion: reduce)');
 let productAnimate=null,productMotionId=0;
