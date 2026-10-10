@@ -26,7 +26,7 @@ for(let i=0;i<N;i++){
 // keep body discs behind the spinning label and the cap
 tilt.insertBefore(tilt.lastElementChild,null);
 for(let i=0;i<9;i++){
-  const t=i/8,r=34+26*Math.pow(1-Math.pow(2*t-1,6),.5);
+  const t=i/8,r=29+3*Math.sin(t*Math.PI);
   disc(cap,r,i*2.6,'radial-gradient(circle at 35% 30%,#6f8de0 0,#10142a 28%,#02030a 100%)');
 }
 const cols=['#4d8dff','#8db4ff','#dfe8ff','#2b4fd8','#ffffff','#a9c0ff'];
@@ -41,7 +41,7 @@ function animateBottle(){
   motionBusy=true;
   const travel=Math.max(0,Math.min(96,stage.getBoundingClientRect().width/2-155));
   const start='translateX(0px) scale(1) skew(0deg) rotate(0turn)';
-  const finish=`translateX(${travel}px) scale(1.25) skew(-45deg) rotate(1turn)`;
+  const finish=`translateX(${Math.min(travel,24)}px) translateY(-14px) scale(1.06) rotate(-4deg)`;
   const unlock=()=>{motionBusy=false};
   try{
     if(animeWaapi){
@@ -176,3 +176,37 @@ function prepareSkyReveals(){
 prepareSkyReveals();
 new MutationObserver(prepareSkyReveals).observe(document.querySelector('main'),{childList:true,subtree:true});
 skyMotionPreference.addEventListener('change',()=>{if(skyMotionPreference.matches){document.querySelectorAll('.sky-reveal').forEach(element=>element.classList.add('sky-visible'));skyRevealObserver.disconnect()}});
+
+/* Hummingbird: perspective orbit, sprite wingbeats, and an upright bottle. */
+(function initHummingbird(){
+  const orbit=document.createElement('div');orbit.className='hummingbird-orbit';orbit.setAttribute('aria-hidden','true');
+  const bird=document.createElement('div');bird.className='hummingbird-sprite';orbit.appendChild(bird);stage.appendChild(orbit);
+  const preference=matchMedia('(prefers-reduced-motion: reduce)');
+  let visible=false,frame=0,last=0,elapsed=0,phase=0;
+  function position(theta){
+    const width=stage.clientWidth,height=stage.clientHeight;
+    const radiusX=Math.max(0,Math.min(width*.29,width/2-82,175)),radiusY=Math.min(height*.11,55);
+    const x=width/2+Math.cos(theta)*radiusX,y=height-235+Math.sin(theta)*radiusY;
+    const nearer=Math.sin(theta)>0,scale=nearer?1.02:.76;
+    orbit.style.transform=`translate(${x}px,${y}px) scale(${scale})`;
+    orbit.style.zIndex=nearer?'4':'1';
+    bird.style.transform=`translate(-50%,-50%) scaleX(${Math.sin(theta)>=0?1:-1}) rotate(${Math.cos(theta)*7}deg)`;
+    orbit.style.opacity=nearer?'1':'.86';
+  }
+  function tick(now){
+    if(last)elapsed+=Math.min(now-last,80);last=now;
+    phase=elapsed/12500*Math.PI*2;
+    position(phase);frame=requestAnimationFrame(tick);
+  }
+  function sync(){
+    cancelAnimationFrame(frame);frame=0;last=0;
+    const active=visible&&!document.hidden&&!preference.matches;
+    orbit.classList.toggle('is-flying',active);
+    if(active)frame=requestAnimationFrame(tick);else if(preference.matches)position(Math.PI*.15);
+  }
+  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync()},{threshold:.1}).observe(stage);
+  preference.addEventListener('change',sync);
+  document.addEventListener('visibilitychange',sync);
+  window.addEventListener('resize',()=>position(phase));
+  position(preference.matches?Math.PI*.15:0);
+})();

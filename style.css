@@ -170,3 +170,13 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .card:hover .art{transform:translateY(-5px);box-shadow:0 22px 40px #509aca2b}
 @media(max-width:800px){.hero{background:linear-gradient(165deg,#fff 0%,#fff 48%,#ddf2ff 48%,#bce5fc 100%)}.hero:after{width:260px;height:260px;right:-100px}.about{background:linear-gradient(155deg,#fff 50%,#e6f5ff 50%)}}
 @media(prefers-reduced-motion:reduce){.sky-reveal{opacity:1;transform:none}.stage .bottle-motion,.hero:after,.hero h1,.hero p,.hero-actions{animation:none}}
+
+/* Keep the signature bottle upright; the cap lifts gently on opening. */
+.open .tilt>.cap{transform:translate(18px,-70px) rotate(-8deg)}
+.bottle-motion{z-index:2}
+.hummingbird-orbit{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;will-change:transform;transition:opacity .3s}
+.hummingbird-sprite{position:absolute;width:160px;height:160px;background-image:url('images/hummingbird-flight.webp');background-repeat:no-repeat;background-size:300% 100%;background-position:0% 50%;filter:drop-shadow(0 8px 7px #184c6322);transform-origin:center;pointer-events:none}
+.hummingbird-orbit.is-flying .hummingbird-sprite{animation:hummingbird-wingbeat .18s steps(1,end) infinite}
+@keyframes hummingbird-wingbeat{0%,100%{background-position:0% 50%}25%,75%{background-position:45.6% 50%}50%{background-position:94.6% 50%}}
+@media(max-width:800px){.hummingbird-sprite{width:128px;height:128px}}
+@media(prefers-reduced-motion:reduce){.hummingbird-orbit,.hummingbird-sprite{animation:none!important;transition:none!important}}
