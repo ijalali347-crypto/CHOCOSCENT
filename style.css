@@ -197,3 +197,26 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .hummingbird-orbit.is-flying .hummingbird-wings{animation:natural-wing-sweep .095s ease-in-out infinite alternate}
 @keyframes natural-wing-sweep{from{transform:rotate(-13deg) scaleY(.68);opacity:.65}to{transform:rotate(9deg) scaleY(1);opacity:.9}}
 @media(prefers-reduced-motion:reduce){.hummingbird-wings{animation:none!important}}
+
+/* A small cat uncaps and sprays the selected fragrance. */
+.fragrance-detail-image{display:flex;flex-direction:column;background:#fff;overflow:hidden}
+.cat-perfume-scene{--cap-line:42%;--cap-left:35%;--cap-right:35%;position:relative;width:100%;max-width:400px;aspect-ratio:1;isolation:isolate}
+.cat-perfume-scene .cat-bottle-body,.cat-perfume-scene .cat-bottle-cap{position:absolute;inset:0;width:100%;height:100%;max-height:none;object-fit:fill;mix-blend-mode:normal}
+.cat-bottle-cap{clip-path:inset(0 var(--cap-right) calc(100% - var(--cap-line)) var(--cap-left));z-index:3;transform-origin:50% var(--cap-line)}
+.cat-perfume-scene .perfume-cat{position:absolute;width:46%;height:62%;object-fit:contain;max-height:none;right:12%;top:calc(var(--cap-line) - 12%);z-index:4;opacity:0;mix-blend-mode:normal;transform-origin:70% 100%}
+.cat-spray-nozzle{position:absolute;width:5%;height:4%;left:47.5%;top:calc(var(--cap-line) - 3%);border-radius:3px;background:linear-gradient(90deg,#8d969e,#eef2f4 55%,#858e98);opacity:0;z-index:2}
+.cat-spray-nozzle:after{content:"";position:absolute;width:3px;height:3px;left:1px;top:3px;background:#485764;border-radius:50%}
+.cat-perfume-mist{position:absolute;left:48%;top:calc(var(--cap-line) - 1%);z-index:5;pointer-events:none}
+.cat-perfume-mist i{position:absolute;width:70px;height:3px;transform-origin:right center;right:0;background:linear-gradient(90deg,transparent,#aacbdd99);filter:blur(2px);border-radius:50%;opacity:0}
+.cat-replay{margin-top:12px;border:1px solid #b5d8e9;border-radius:99px;background:#f6fbff;color:#245775;padding:8px 16px;cursor:pointer;font:inherit;font-size:13px}
+.cat-playing .cat-bottle-body{animation:cat-hide-cap 4.8s both}
+.cat-playing .cat-bottle-cap{animation:cat-lift-cap 4.8s cubic-bezier(.4,0,.2,1) both}
+.cat-playing .perfume-cat{animation:cat-reach 4.8s cubic-bezier(.4,0,.2,1) both}
+.cat-playing .cat-spray-nozzle{animation:cat-nozzle 4.8s both}
+.cat-playing .cat-perfume-mist i{animation:cat-mist 4.8s ease-out both;animation-delay:var(--delay)}
+@keyframes cat-hide-cap{0%,18%,86%,100%{clip-path:inset(0)}22%,82%{clip-path:inset(var(--cap-line) 0 0)}}
+@keyframes cat-lift-cap{0%,18%,86%,100%{transform:none}38%,72%{transform:translate(14%,-16%) rotate(12deg)}}
+@keyframes cat-reach{0%,100%{opacity:0;transform:translateX(35%)}14%,22%{opacity:1;transform:translateX(0) rotate(-3deg)}38%,48%{opacity:1;transform:translateY(-7%) rotate(-7deg)}54%,60%{opacity:1;transform:translate(-4%,-2%) rotate(-12deg)}72%,86%{opacity:1;transform:none}94%{opacity:0;transform:translateX(25%)}}
+@keyframes cat-nozzle{0%,20%,85%,100%{opacity:0}24%,82%{opacity:1}54%,60%{opacity:1;translate:0 2px}}
+@keyframes cat-mist{0%,51%,72%,100%{opacity:0;transform:rotate(var(--angle)) scaleX(.1)}56%{opacity:.75;transform:rotate(var(--angle)) scaleX(1)}68%{opacity:0;transform:rotate(var(--angle)) translateX(-30px) scaleX(1.4)}}
+@media(prefers-reduced-motion:reduce){.cat-playing *{animation:none!important}.cat-replay{display:none}}
