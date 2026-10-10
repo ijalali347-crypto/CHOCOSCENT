@@ -16,7 +16,7 @@ function catPresentation(p){
   const body=picture(p,false);body.className='cat-bottle-body';
   const cap=picture(p,false);cap.alt='';cap.setAttribute('aria-hidden','true');cap.className='cat-bottle-cap';
   const cat=node('div',null,'perfume-cat articulated-cat');cat.setAttribute('aria-hidden','true');
-  cat.append(node('span',null,'cat-photo-body'),node('span',null,'cat-photo-lift-paw'),node('span',null,'cat-photo-press-paw'));
+  cat.append(node('span',null,'cat-photo-body'));const greeting=node('span','Hi! 😺','cat-greeting');cat.append(greeting);
   const nozzle=node('span',null,'cat-spray-nozzle');nozzle.setAttribute('aria-hidden','true');
   const mist=node('span',null,'cat-perfume-mist');mist.setAttribute('aria-hidden','true');
   for(let i=0;i<16;i++){const drop=node('i');drop.style.setProperty('--angle',(i/15*42-21)+'deg');drop.style.setProperty('--delay',(i%4*.045)+'s');mist.append(drop)}
@@ -45,20 +45,24 @@ function catPresentation(p){
 const catFrames=new Map();
 function stopCat(scene){
   cancelAnimationFrame(catFrames.get(scene));catFrames.delete(scene);
-  scene.classList.remove('cat-playing','cat-cap-off','cat-pressing','cat-misting');scene.style.setProperty('--cat-opacity','0');
+  scene.classList.remove('cat-playing','cat-cap-off','cat-pressing','cat-misting','cat-saying-hi');scene.style.setProperty('--cat-opacity','0');
 }
 dialog.addEventListener('close',()=>{for(const scene of catFrames.keys())stopCat(scene)});
 function playCat(scene){
   stopCat(scene);
   if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   scene.classList.add('cat-playing');
+  if('speechSynthesis' in window&&!document.hidden){
+    const hello=new SpeechSynthesisUtterance('Hi!');hello.lang='en-US';hello.pitch=1.5;hello.rate=1.15;hello.volume=.5;
+    window.speechSynthesis.speak(hello);
+  }
   const started=performance.now();
   const smooth=v=>{v=Math.max(0,Math.min(1,v));return v*v*(3-2*v)};
   function frame(now){
     if(!dialog.open||!scene.isConnected){stopCat(scene);return}
     const t=now-started;
     const lift=smooth((t-1100)/1200)*(1-smooth((t-4100)/1200));
-    const angle=lift*50*Math.PI/180,scale=.5;
+    const angle=lift*50*Math.PI/180,scale=.62;
     // The cap follows the upper paw's exact pivot arc.
     const dx=scale*(-.26*Math.cos(angle)+.24*Math.sin(angle)+.26);
     const dy=scale*(-.26*Math.sin(angle)-.24*Math.cos(angle)+.24);
@@ -69,7 +73,7 @@ function playCat(scene){
     scene.style.setProperty('--cap-angle',(lift*8)+'deg');
     scene.style.setProperty('--press-angle',(-press*12)+'deg');
     scene.style.setProperty('--cat-opacity',String(smooth(t/700)*(1-smooth((t-5700)/800))));
-    scene.classList.toggle('cat-cap-off',lift>.01);
+    scene.classList.toggle('cat-cap-off',lift>.01);scene.classList.toggle('cat-saying-hi',t<1800);
     scene.classList.toggle('cat-pressing',press>.4);
     scene.classList.toggle('cat-misting',t>3000&&t<3550);
     if(t<6600)catFrames.set(scene,requestAnimationFrame(frame));else stopCat(scene);

@@ -235,3 +235,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{ou
 .cat-pressing .cat-spray-nozzle{translate:0 2px}
 .cat-misting .cat-perfume-mist i{animation:grip-spray .55s ease-out infinite!important;animation-delay:var(--delay)!important}
 @keyframes grip-spray{0%{opacity:0;transform:rotate(var(--angle)) scaleX(.05)}30%{opacity:.7}100%{opacity:0;transform:rotate(var(--angle)) translateX(-30px) scaleX(1.4)}}
+
+/* One intact, smiling character prevents doubled cutout silhouettes. */
+.cat-perfume-scene .articulated-cat{width:62%;left:calc(var(--grip-x) - 12.4%);top:calc(var(--grip-y) - 10.54%);transform:translate(var(--cap-dx),var(--cap-dy));filter:drop-shadow(0 3px 3px #4f65721a)}
+.cat-photo-body{background-image:url('images/perfume-cat-funny-v2.webp');clip-path:none}
+.cat-greeting{position:absolute;left:59%;top:-3%;padding:7px 12px;border-radius:16px 16px 16px 2px;background:white;color:#277da5;box-shadow:0 4px 16px #3b749226;font:700 clamp(16px,2vw,22px)/1.2 Jost,system-ui,sans-serif;white-space:nowrap;opacity:0;transform:translateY(6px) scale(.9);transition:opacity .25s,transform .3s}
+.cat-saying-hi .cat-greeting{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.cat-greeting{transition:none}}
